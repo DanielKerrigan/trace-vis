@@ -1,0 +1,105 @@
+#container {
+    font-family: sans-serif;
+    display: grid;
+    grid-gap: 25px;
+    grid-template-areas:
+        "inp"
+        "vis";
+    justify-items: center;
+    align-items: center;
+}
+
+/* controls */
+
+#inputs {
+    grid-area: inp;
+    display: grid;
+    grid-gap: 5px;
+    align-items: center;
+    grid-template-areas:
+        "sdl sd1 sd2 ... ucl ucc"
+        "edl ed1 ed2 ... ptb pfb"
+        "... dfb ... ... ... ...";
+}
+
+#startDateLabel {
+    grid-area: sdl;
+    justify-self: end;
+}
+
+#endDateLabel {
+    grid-area: edl;
+    justify-self: end;
+}
+
+#startDateMonth {
+    grid-area: sd1;
+}
+
+#startDateYear {
+    grid-area: sd2;
+    margin-right: 10px;
+}
+
+#endDateMonth {
+    grid-area: ed1
+}
+
+#endDateYear {
+    grid-area: ed2;
+    margin-right: 10px;
+}
+
+#dateButton {
+    grid-area: dfb;
+}
+
+#noLinkLabel {
+    grid-area: ucl;
+}
+
+#noLinkNodes {
+    grid-area: ucc;
+}
+
+#codePath {
+    grid-area: ptb;
+}
+
+#pathButton {
+    grid-area: pfb;
+}
+
+/* Radial */
+#radial {
+    grid-area: vis;
+    display: grid;
+    justify-items: center;
+    width: 1000px;
+}
+
+.radial_node.highlight {
+    stroke: yellow;
+    stroke-width: 2px;
+}
+
+.radial_link {
+    fill: none;
+    stroke: #999;
+    stroke-width: 1px;
+    stroke-opacity: 0.5;
+}
+
+.radial_link.highlight {
+    fill: none;
+    stroke: yellow;
+    stroke-width: 2px; 
+    stroke-opacity: 1;
+}
+
+.radial_info {
+    font-family: sans-serif;
+    text-align: center;
+}
+
+
