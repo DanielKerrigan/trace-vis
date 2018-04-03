@@ -79,8 +79,12 @@
 }
 
 .radial_node.highlight {
-    stroke: yellow;
+    stroke: black;
     stroke-width: 2px;
+}
+
+.radial_node:hover {
+    fill: yellow;
 }
 
 .radial_link {
@@ -92,7 +96,7 @@
 
 .radial_link.highlight {
     fill: none;
-    stroke: yellow;
+    stroke: black;
     stroke-width: 2px; 
     stroke-opacity: 1;
 }

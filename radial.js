@@ -160,17 +160,49 @@ function Radial() {
                     .attr("fill", d => color(d.data.type))
                     .attr("r", nodeSize)
                     .on("mouseover", mouseover)
-                    .on("mouseout", () => {
-                        graph.selectAll(".radial_link").classed("highlight", false);
-                        graph.selectAll(".radial_node").classed("highlight", false);
-                        info.text(defaultMsg);
-                    })
+                    .on("mouseout", mouseout)
+                    .on("click", click)
                   .merge(nodes)
                     .transition()
                     .duration(200)
                     .attr("transform", d => "rotate(" + (d.x - 90)  + ") translate(" + d.y + ")")
             }
             update();
+
+
+            function click(d) {
+                graph.selectAll(".radial_link")
+                  .each(function(n) {
+                      n.freeze = false;
+                      n.target.freeze = false;
+                      n.source.freeze = false;
+                  });
+                
+                if (d3.select(this).classed("clicked")) {
+                    d3.select(this).classed("clicked", false);
+                    return;
+                }
+
+                let hnodes = new Set();
+                
+                graph.selectAll(".radial_link")
+                  .each(function(n) {
+                      console.log(n);
+                      if (n.source === d) {
+                          n.freeze = true;
+                          n.target.freeze = true;
+                          hnodes.add(n.target);
+                      }
+                      if (n.target === d) {
+                          n.freeze = true;
+                          n.source.freeze = true;
+                          hnodes.add(n.source);
+                      }
+                  });
+                
+                d3.select(this).classed("clicked", true);
+                d.freeze = true;
+            }
 
 
             function mouseover(d) {
@@ -199,9 +231,9 @@ function Radial() {
                   })
                     .classed("highlight", true);
 
-                let dat = d.data;
                 
-                // shot information about this node
+                // show information about this node
+                let dat = d.data;
                 if (dat.type === "code") {
                     info.html("<strong>Path</strong>: " + dat.path);
                 } else if (dat.type === "commit") {
@@ -211,6 +243,19 @@ function Radial() {
                 } else if (dat.type === "improvement") {
                     info.html("<strong>Priority</strong>: " + dat.priority + "<br /><strong>Status</strong>: " + dat.status + "<br /><strong>Summary</strong>: " + dat.summary);
                 }
+            }
+
+
+            function mouseout(d) {
+                graph.selectAll(".radial_link")
+                  .filter(d => !d.freeze)
+                    .classed("highlight", false);
+
+                graph.selectAll(".radial_node")
+                  .filter(d => !d.freeze)
+                    .classed("highlight", false);
+
+                info.text(defaultMsg);
             }
 
 
@@ -235,12 +280,24 @@ function Radial() {
             filtering.unconnectedNodes = d3.select(this).property("checked");
             update();
         });
-    
+   
+    function handleCodePathInput() {
+        filtering.codePath = d3.select("#codePath").property("value");
+        update();
+    }
+
     d3.select("#pathButton")
         .on("click", () => {
-            filtering.codePath = d3.select("#codePath").property("value");
-            update();
+            handleCodePathInput();
         });
+    
+    d3.select("#codePath")
+        .on("keypress", () => {
+            if (d3.event.keyCode === 13) {
+                handleCodePathInput();
+            }
+        });
+    
     
     return radial;
 }
