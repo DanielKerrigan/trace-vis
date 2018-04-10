@@ -1,4 +1,4 @@
-issue_id_1,issue_id_2,method,score
+issue_id,issue_id,method,score
 MNG-2254,MNG-2255,default,1
 MNG-4498,MNG-4309,default,1
 MNG-6198,MNG-5889,default,1

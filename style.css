@@ -78,7 +78,7 @@
     width: 1000px;
 }
 
-.radial_node.highlight {
+.radial_node.highlight, .radial_node.frozen {
     stroke: black;
     stroke-width: 2px;
 }
@@ -94,7 +94,7 @@
     stroke-opacity: 0.5;
 }
 
-.radial_link.highlight {
+.radial_link.highlight, .radial_link.frozen {
     fill: none;
     stroke: black;
     stroke-width: 2px; 

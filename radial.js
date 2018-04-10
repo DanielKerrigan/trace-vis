@@ -171,13 +171,8 @@ function Radial() {
 
 
             function click(d) {
-                graph.selectAll(".radial_link")
-                  .each(function(n) {
-                      n.freeze = false;
-                      n.target.freeze = false;
-                      n.source.freeze = false;
-                  });
-                
+                graph.selectAll(".frozen").classed("frozen", false);
+
                 if (d3.select(this).classed("clicked")) {
                     d3.select(this).classed("clicked", false);
                     return;
@@ -186,22 +181,26 @@ function Radial() {
                 let hnodes = new Set();
                 
                 graph.selectAll(".radial_link")
-                  .each(function(n) {
-                      console.log(n);
+                  .filter(function(n) {
                       if (n.source === d) {
-                          n.freeze = true;
-                          n.target.freeze = true;
                           hnodes.add(n.target);
+                          return true;
                       }
                       if (n.target === d) {
-                          n.freeze = true;
-                          n.source.freeze = true;
                           hnodes.add(n.source);
+                          return true;
                       }
-                  });
+                  })
+                  .classed("frozen", true);
+
+                graph.selectAll(".radial_node")
+                    .filter(function(n) {
+                        return hnodes.has(n);
+                    })
+                    .classed("frozen", true);
                 
                 d3.select(this).classed("clicked", true);
-                d.freeze = true;
+                d3.select(this).classed("frozen", true);
             }
 
 
@@ -237,7 +236,7 @@ function Radial() {
                 if (dat.type === "code") {
                     info.html("<strong>Path</strong>: " + dat.path);
                 } else if (dat.type === "commit") {
-                    info.html("<strong>Commit Date</strong>: " + dat.commit_date + "<br /><strong>Message</strong>: " + dat.message);
+                    info.html("<strong>Author</strong>: " + dat.author + "<br /><strong>Commit Date</strong>: " + dat.commit_date + "<br /><strong>Message</strong>: " + dat.message);
                 } else if (dat.type === "bug") {
                     info.html("<strong>Priority</strong>: " + dat.priority + "<br /><strong>Status</strong>: " + dat.status + "<br /><strong>Summary</strong>: " + dat.summary);
                 } else if (dat.type === "improvement") {
@@ -247,12 +246,7 @@ function Radial() {
 
 
             function mouseout(d) {
-                graph.selectAll(".radial_link")
-                  .filter(d => !d.freeze)
-                    .classed("highlight", false);
-
-                graph.selectAll(".radial_node")
-                  .filter(d => !d.freeze)
+                graph.selectAll(".highlight")
                     .classed("highlight", false);
 
                 info.text(defaultMsg);
