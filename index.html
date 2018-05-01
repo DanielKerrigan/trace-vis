@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Software Graphs</title>
+        <title>Trace Graph</title>
         <link rel="stylesheet" href="style.css">
         <script src="https://d3js.org/d3.v5.min.js"></script>
         <script type="text/javascript" src="radial.js"></script>
@@ -10,21 +10,77 @@
     <body>
         <div id="container">
             <div id="inputs">
-                <label id="startDateLabel" for="startDateMonth">Start Date</label>
-                <select id="startDateMonth"></select>
-                <select id="startDateYear"></select>
-                
-                <label id="endDateLabel" for="endDateMonth">End Date</label>
-                <select id="endDateMonth"></select>
-                <select id="endDateYear"></select>
-                
-                <button id="dateButton">Filter Date</button>
-                
-                <label id="noLinkLabel" for="noLinkNodes">Show unconnected nodes</label>
-                <input id="noLinkNodes" checked="true" type="checkbox">
+                <h3>General</h3>
+                <div class="general-inputs">
+                    <label id="startDateLabel" for="startDateMonth">Start Date</label>
+                    <select id="startDateMonth"></select>
+                    <select id="startDateYear"></select>
 
-                <input id="codePath" type="text" placeholder="Code Path">
-                <button id="pathButton">Filter Path</button>
+                    <label id="endDateLabel" for="endDateMonth">End Date</label>
+                    <select id="endDateMonth"></select>
+                    <select id="endDateYear"></select>
+                    
+                    <button id="dateButton">Filter Date</button>
+                    
+                    <label id="noLinkLabel" for="noLinkNodes">Unconnected</label>
+                    <input id="noLinkNodes" checked="true" type="checkbox">
+                </div>
+                
+                <h3>Code</h3>
+                <div class="code-inputs">
+                    <input id="codePath" type="text" placeholder="Path">
+                    <button id="pathButton">Filter Path</button>
+                </div>
+                
+                <h3>Commit</h3>
+                <div class="commit-inputs">
+                    <div>
+                        <input id="commitAuthor" type="text" placeholder="Author">
+                        <button id="authorButton">Filter Author</button>
+                    </div>
+                    <div class="text-input">
+                        <input id="commitMsg" type="text" placeholder="Message">
+                        <button id="commitMsgButton">Filter Message</button>
+                    </div>
+                </div>
+                
+                <h3>Bug</h3>
+                <div class="bug-inputs">
+                    <label id="bugPriorityLabel" for="bugPriority">Priority</label>
+                    <select id="bugPriority"></select>
+                    <div class="text-input">
+                        <input id="bugDescription" type="text" placeholder="Description">
+                        <button id="bugDescriptionButton">Filter Description</button>
+                    </div>
+                    <div class="text-input">
+                        <input id="bugSummary" type="text" placeholder="Summary">
+                        <button id="bugSummaryButton">Filter Summary</button>
+                    </div>
+                    <div class="text-input">
+                        <input id="bugAssignee" type="text" placeholder="Assignee">
+                        <button id="bugAssigneeButton">Filter Assignee</button>
+                    </div>
+                </div>
+                
+                <h3>Improvement</h3>
+                <div class="improvement-inputs">
+                    <label id="impPriorityLabel" for="impPriority">Priority</label>
+                    <select id="impPriority"></select>
+                    <div class="text-input">
+                        <input id="impDescription" type="text" placeholder="Description">
+                        <button id="impDescriptionButton">Filter Description</button>
+                    </div>
+                    <div class="text-input">
+                        <input id="impSummary" type="text" placeholder="Summary">
+                        <button id="impSummaryButton">Filter Summary</button>
+                    </div>
+                    <div class="text-input">
+                        <input id="impAssignee" type="text" placeholder="Assignee">
+                        <button id="impAssigneeButton">Filter Assignee</button>
+                    </div>
+                </div>
+                
+
             </div>
             <div id="radial"></div>
         </div>

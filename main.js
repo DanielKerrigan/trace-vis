@@ -22,6 +22,7 @@ async function getData() {
     formatNode(commit, "commit");
     formatNode(bug, "bug");
     formatNode(improvement, "improvement");
+    console.log(improvement);
 
     addLinkSourceTarget(codeCommit, "class_id", "issue_id", "code", "commit");
     addLinkSourceTarget(bugCommit, "issue_id", "commit_id", "bug", "commit");
@@ -35,8 +36,8 @@ async function getData() {
                 d.id = d["commit_id"];
                 d.commit_date = parseTimeEDT(d.commit_date) || parseTimeEST(d.commit_date);
             } else if (type === "bug" || type === "improvement") {
-                d.resolved_date = parseTimeEDT(d.resolved_date) || parseTimeEST(d.commit_date);
-                d.created_date = parseTimeEDT(d.created_date) || parseTimeEST(d.commit_date);
+                d.resolved_date = parseTimeEDT(d.resolved_date) || parseTimeEST(d.resolved_date);
+                d.created_date = parseTimeEDT(d.created_date) || parseTimeEST(d.created_date);
             }
             allNodes.push(d);
         });
@@ -58,6 +59,8 @@ async function getData() {
 
 getData().then(data => {
     setUpDateSelectors(data);
+    setUpPrioritySelector("bugPriority", getPriorities(data, "bug"));
+    setUpPrioritySelector("impPriority", getPriorities(data, "improvement"));
 
     d3.select("#radial")
         .datum(data)
@@ -93,6 +96,21 @@ function setUpDateSelectors(data) {
 
     startDateMonth.value = "January";
     endDateMonth.value = "December";
+}
+
+function getPriorities(data, type) {
+    return Array.from(new Set(data.nodes.filter(d => d.type === type).map(d => d.priority))).sort();
+}
+
+function setUpPrioritySelector(selectorId, priorities) {
+    const prioritySelector = document.getElementById(selectorId);
+
+    for (let p of priorities) {
+        let text = p.length <= 10 ? p : p.substr(0, 10) + "...";
+        prioritySelector.appendChild(createOption(p, text));
+    }
+    prioritySelector.appendChild(createOption("", ""));
+    prioritySelector.value = "";
 }
 
 function createOption(value, text) {

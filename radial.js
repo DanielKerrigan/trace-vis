@@ -4,7 +4,8 @@ function Radial() {
     var radius = diameter / 2;
     var innerRadius = radius - 10;
     var nodeSize = 5;
-    var defaultMsg = "Hover over a node for details.";
+    var defaultMsg = "Hover over a node for details.<br />Click on a node to keep it highlighted.";
+    var msg = defaultMsg;
 
     var color = d3.scaleOrdinal().range(d3.schemeCategory10);
 
@@ -15,21 +16,56 @@ function Radial() {
         startDate: null,
         endDate: null,
         unconnectedNodes: true,
-        codePath: ""
+        codePath: "",
+        commitAuthor: "",
+        commitMsg: "",
+        bugAssignee: "",
+        bugDescription: "",
+        bugSummary: "",
+        bugPriority: "",
+        impAssignee: "",
+        impDescription: "",
+        impSummary: "",
+        impPriority: ""
+    }
+
+    function match(a, b) {
+        return a.toLowerCase().search(b.toLowerCase()) !== -1;
     }
 
     function filterNodes(d) {
         if (d.type === "code") {
-            if (filtering.codePath !== "") {
-                return d.path.search(filtering.codePath) !== -1;
-            }
+            return match(d.path, filtering.codePath);
         } else if (d.type === "commit") {
-            if (filtering.startDate && filtering.endDate && d.commit_date) {
+            if (!match(d.author, filtering.commitAuthor) ||
+                !match(d.message, filtering.commitMsg)) {
+                return false;
+            }
+            if (filtering.startDate && filtering.endDate) {
                 return d.commit_date >= filtering.startDate &&
                     d.commit_date <= filtering.endDate;
             }
-        } else if(d.type === "bug" || d.type === "improvement") {
-            if (filtering.startDate && filtering.endDate && d.commit_date) {
+        } else if(d.type === "bug") {
+            if (!match(d.priority, filtering.bugPriority) ||
+                !match(d.description, filtering.bugDescription) ||
+                !match(d.summary, filtering.bugSummary) ||
+                (!match(d.assignee, filtering.bugAssignee) &&
+                 !match(d.assignee_username, filtering.bugAssignee))) {
+                return false;
+            }
+            if (filtering.startDate && filtering.endDate) {
+                return d.created_date >= filtering.startDate &&
+                    d.created_date <= filtering.endDate;
+            }
+        } else if(d.type === "improvement") {
+            if (!match(d.priority, filtering.impPriority) ||
+                !match(d.description, filtering.impDescription) ||
+                !match(d.summary, filtering.impSummary) ||
+                (!match(d.assignee, filtering.impAssignee) &&
+                 !match(d.assignee_username, filtering.impAssignee))) {
+                return false;
+            }
+            if (filtering.startDate && filtering.endDate) {
                 return d.created_date >= filtering.startDate &&
                     d.created_date <= filtering.endDate;
             }
@@ -47,7 +83,7 @@ function Radial() {
             var graph = svg.append("g")
                 .attr("transform", "translate("+ radius +","+ radius +")");
 
-            var info = selection.append("p")
+            var info = selection.append("div")
                 .attr("class", "radial_info")
                 .text(defaultMsg);
 
@@ -149,7 +185,7 @@ function Radial() {
                   .merge(links)
                     .transition()
                     .duration(200)
-                    .attr("d", line)
+                    .attr("d", line);
 
                 var nodes = nodeGroup.selectAll(".radial_node")
                   .data(root.leaves(), d => d.data.id);
@@ -165,7 +201,13 @@ function Radial() {
                   .merge(nodes)
                     .transition()
                     .duration(200)
-                    .attr("transform", d => "rotate(" + (d.x - 90)  + ") translate(" + d.y + ")")
+                    .attr("transform", d => "rotate(" + (d.x - 90)  + ") translate(" + d.y + ")");
+
+                if (graph.selectAll(".clicked").size() === 0) {
+                    graph.selectAll(".frozen").classed("frozen", false);
+                    msg = defaultMsg;
+                    info.html(msg);
+                }
             }
             update();
 
@@ -174,9 +216,13 @@ function Radial() {
                 graph.selectAll(".frozen").classed("frozen", false);
 
                 if (d3.select(this).classed("clicked")) {
-                    d3.select(this).classed("clicked", false);
+                    msg = defaultMsg;
+                    graph.selectAll(".clicked").classed("clicked", false);
                     return;
                 }
+                graph.selectAll(".clicked").classed("clicked", false);
+
+                msg = info.html();
 
                 let hnodes = new Set();
                 
@@ -236,11 +282,21 @@ function Radial() {
                 if (dat.type === "code") {
                     info.html("<strong>Path</strong>: " + dat.path);
                 } else if (dat.type === "commit") {
-                    info.html("<strong>Author</strong>: " + dat.author + "<br /><strong>Commit Date</strong>: " + dat.commit_date + "<br /><strong>Message</strong>: " + dat.message);
+                    info.html("<strong>Author</strong>: " + dat.author +
+                        "<br /><strong>Commit Date</strong>: " + dat.commit_date +
+                        "<br /><strong>Message</strong>: " + dat.message);
                 } else if (dat.type === "bug") {
-                    info.html("<strong>Priority</strong>: " + dat.priority + "<br /><strong>Status</strong>: " + dat.status + "<br /><strong>Summary</strong>: " + dat.summary);
+                    info.html("<strong>Priority</strong>: " + dat.priority +
+                        "<br /><strong>Assignee</strong>: " + dat.assignee + ", " + dat.assignee_username + 
+                        "<br /><strong>Status</strong>: " + dat.status +
+                        "<br /><strong>Summary</strong>: " + dat.summary +
+                        "<br /><strong>Description</strong>: " + dat.description);
                 } else if (dat.type === "improvement") {
-                    info.html("<strong>Priority</strong>: " + dat.priority + "<br /><strong>Status</strong>: " + dat.status + "<br /><strong>Summary</strong>: " + dat.summary);
+                    info.html("<strong>Priority</strong>: " + dat.priority +
+                        "<br /><strong>Assignee</strong>: " + dat.assignee + ", " + dat.assignee_username + 
+                        "<br /><strong>Status</strong>: " + dat.status +
+                        "<br /><strong>Summary</strong>: " + dat.summary +
+                        "<br /><strong>Description</strong>: " + dat.description);
                 }
             }
 
@@ -248,8 +304,7 @@ function Radial() {
             function mouseout(d) {
                 graph.selectAll(".highlight")
                     .classed("highlight", false);
-
-                info.text(defaultMsg);
+                info.html(msg);
             }
 
 
@@ -274,24 +329,46 @@ function Radial() {
             filtering.unconnectedNodes = d3.select(this).property("checked");
             update();
         });
-   
-    function handleCodePathInput() {
-        filtering.codePath = d3.select("#codePath").property("value");
-        update();
-    }
 
-    d3.select("#pathButton")
-        .on("click", () => {
-            handleCodePathInput();
+
+    d3.select("#bugPriority")
+        .on("change", () => {
+            filtering.bugPriority = d3.select("#bugPriority").property("value");
+            update();
         });
-    
-    d3.select("#codePath")
-        .on("keypress", () => {
-            if (d3.event.keyCode === 13) {
-                handleCodePathInput();
-            }
+
+
+    d3.select("#impPriority")
+        .on("change", () => {
+            filtering.impPriority = d3.select("#impPriority").property("value");
+            update();
         });
-    
+   
+
+    connectTextInput("#codePath", "#pathButton", "codePath");
+    connectTextInput("#commitAuthor", "#authorButton", "commitAuthor");
+    connectTextInput("#commitMsg", "#commitMsgButton", "commitMsg");
+    connectTextInput("#bugDescription", "#bugDescriptionButton", "bugDescription");
+    connectTextInput("#bugSummary", "#bugSummaryButton", "bugSummary");
+    connectTextInput("#bugAssignee", "#bugAssigneeButton", "bugAssignee");
+    connectTextInput("#impDescription", "#impDescriptionButton", "impDescription");
+    connectTextInput("#impSummary", "#impSummaryButton", "impSummary");
+    connectTextInput("#impAssignee", "#impAssigneeButton", "impAssignee");
+
+    function connectTextInput(inputId, buttonId, field) {
+        d3.select(buttonId)
+            .on("click", () => {
+                filtering[field] = d3.select(inputId).property("value");
+                update();
+            });
+        d3.select(inputId)
+            .on("keypress", () => {
+                if (d3.event.keyCode === 13) {
+                    filtering[field] = d3.select(inputId).property("value");
+                    update();
+                }
+            });
+    }
     
     return radial;
 }
