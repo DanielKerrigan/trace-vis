@@ -26,7 +26,11 @@ function Radial() {
         impAssignee: "",
         impDescription: "",
         impSummary: "",
-        impPriority: ""
+        impPriority: "",
+        code: true,
+        commit: true,
+        improvement: true,
+        bug: true
     }
 
     function match(a, b) {
@@ -34,8 +38,13 @@ function Radial() {
     }
 
     function filterNodes(d) {
+        if (!filtering[d.type]) {
+          return false;
+        }
+
         if (d.type === "code") {
             return match(d.path, filtering.codePath);
+
         } else if (d.type === "commit") {
             if (!match(d.author, filtering.commitAuthor) ||
                 !match(d.message, filtering.commitMsg)) {
@@ -45,6 +54,7 @@ function Radial() {
                 return d.commit_date >= filtering.startDate &&
                     d.commit_date <= filtering.endDate;
             }
+
         } else if(d.type === "bug") {
             if (!match(d.priority, filtering.bugPriority) ||
                 !match(d.description, filtering.bugDescription) ||
@@ -57,6 +67,7 @@ function Radial() {
                 return d.created_date >= filtering.startDate &&
                     d.created_date <= filtering.endDate;
             }
+
         } else if(d.type === "improvement") {
             if (!match(d.priority, filtering.impPriority) ||
                 !match(d.description, filtering.impDescription) ||
@@ -83,9 +94,8 @@ function Radial() {
             var graph = svg.append("g")
                 .attr("transform", "translate("+ radius +","+ radius +")");
 
-            var info = selection.append("div")
-                .attr("class", "radial_info")
-                .text(defaultMsg);
+            var info = d3.select("#info");
+            info.text(defaultMsg);
 
             var cluster = d3.cluster()
                 .size([360, innerRadius]);
@@ -283,20 +293,20 @@ function Radial() {
                     info.html("<strong>Path</strong>: " + dat.path);
                 } else if (dat.type === "commit") {
                     info.html("<strong>Author</strong>: " + dat.author +
-                        "<br /><strong>Commit Date</strong>: " + dat.commit_date +
-                        "<br /><strong>Message</strong>: " + dat.message);
+                        "<br><br><strong>Commit Date</strong>: " + dat.commit_date +
+                        "<br><br><strong>Message</strong>: " + dat.message);
                 } else if (dat.type === "bug") {
                     info.html("<strong>Priority</strong>: " + dat.priority +
-                        "<br /><strong>Assignee</strong>: " + dat.assignee + ", " + dat.assignee_username + 
-                        "<br /><strong>Status</strong>: " + dat.status +
-                        "<br /><strong>Summary</strong>: " + dat.summary +
-                        "<br /><strong>Description</strong>: " + dat.description);
+                        "<br><br><strong>Assignee</strong>: " + dat.assignee + ", " + dat.assignee_username + 
+                        "<br><br><strong>Status</strong>: " + dat.status +
+                        "<br><br><strong>Summary</strong>: " + dat.summary +
+                        "<br><br><strong>Description</strong>: " + dat.description);
                 } else if (dat.type === "improvement") {
                     info.html("<strong>Priority</strong>: " + dat.priority +
-                        "<br /><strong>Assignee</strong>: " + dat.assignee + ", " + dat.assignee_username + 
-                        "<br /><strong>Status</strong>: " + dat.status +
-                        "<br /><strong>Summary</strong>: " + dat.summary +
-                        "<br /><strong>Description</strong>: " + dat.description);
+                        "<br><br><strong>Assignee</strong>: " + dat.assignee + ", " + dat.assignee_username + 
+                        "<br><br><strong>Status</strong>: " + dat.status +
+                        "<br><br><strong>Summary</strong>: " + dat.summary +
+                        "<br><br><strong>Description</strong>: " + dat.description);
                 }
             }
 
@@ -324,10 +334,28 @@ function Radial() {
             update();
         });
 
+    for (let kind of ["code", "commit", "bug", "improvement"]) {
+      d3.select("#" + kind + "Check")
+        .on("change", function() {
+          filtering[kind] = d3.select(this).property("checked");
+          update();
+        });
+    }
+
     d3.select("#noLinkNodes")
         .on("click", function() {
             filtering.unconnectedNodes = d3.select(this).property("checked");
             update();
+        });
+    
+    d3.select("#onlyHighCheck")
+        .on("click", function() {
+            if (d3.select(this).property("checked")) {
+              d3.selectAll('.radial_node:not(.frozen)').remove();
+              d3.selectAll('.radial_link:not(.frozen)').remove();
+            } else {
+              update();
+            }
         });
 
 

@@ -12,18 +12,50 @@
             <div id="inputs">
                 <h3>General</h3>
                 <div class="general-inputs">
-                    <label id="startDateLabel" for="startDateMonth">Start Date</label>
-                    <select id="startDateMonth"></select>
-                    <select id="startDateYear"></select>
+                    <div>
+                        <input id="codeCheck" checked="true" type="checkbox">
+                        <label id="codeCheckLabel" for="codeCheck">Code</label>
+                    </div>
+                    <div> 
+                        <input id="commitCheck" checked="true" type="checkbox">
+                        <label id="commitCheckLabel" for="commitCheck">Commit</label>
+                    </div>
+                    
+                    <div>
+                        <input id="bugCheck" checked="true" type="checkbox">
+                        <label id="bugCheckLabel" for="bugCheck">Bug</label>
+                    </div>
+                   
+                    <div>
+                        <input id="improvementCheck" checked="true" type="checkbox">
+                        <label id="improvementCheckLabel" for="improvementCheck">Improvement</label>
+                    </div>
 
-                    <label id="endDateLabel" for="endDateMonth">End Date</label>
-                    <select id="endDateMonth"></select>
-                    <select id="endDateYear"></select>
+                    <div class="gereral-filter-date">
+                        <label id="startDateLabel" for="startDateMonth">Start Date</label>
+                        <select id="startDateMonth"></select>
+                        <select id="startDateYear"></select>
+
+                        <label id="endDateLabel" for="endDateMonth">End Date</label>
+                        <select id="endDateMonth"></select>
+                        <select id="endDateYear"></select>
+                        
+                        <button id="dateButton">Filter Date</button>
+                    </div>
                     
-                    <button id="dateButton">Filter Date</button>
-                    
-                    <label id="noLinkLabel" for="noLinkNodes">Unconnected</label>
-                    <input id="noLinkNodes" checked="true" type="checkbox">
+                    <div id="noLink">
+                        <input id="noLinkNodes" checked="true" type="checkbox">
+                        <label id="noLinkLabel" for="noLinkNodes">
+                            Show nodes that have no edges
+                        </label>
+                    </div>
+                   
+                    <div>
+                        <input id="onlyHighCheck" type="checkbox">
+                        <label id="onlyHighCheckLabel" for="onlyHighCheck">
+                            Only show highlighted nodes
+                        </label>
+                    </div>
                 </div>
                 
                 <h3>Code</h3>
@@ -83,6 +115,7 @@
 
             </div>
             <div id="radial"></div>
+            <div id="info" class="radial_info"></div>
         </div>
         <script type="text/javascript" src="main.js"></script>
     </body>

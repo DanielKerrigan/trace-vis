@@ -9,12 +9,12 @@ html, body {
     width: 100%;
     height: 100%;
     grid-gap: 25px;
-    grid-template-columns: auto 600px 600px auto;
-    grid-template-rows: auto 700px auto;
+    grid-template-columns: auto 300px 600px 300px auto;
+    grid-template-rows: auto 600px auto;
     grid-template-areas:
-        ". ... ... ."
-        ". inp vis ."
-        ". ... ... .";
+        ". ... ... ... ."
+        ". inp vis txt ."
+        ". ... ... ... .";
     justify-items: center;
     align-items: center;
 }
@@ -26,24 +26,23 @@ html, body {
 }
 
 #inputs {
-    height: 700px;
+    height: 600px;
     grid-area: inp;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .text-input {
     margin-top: 5px;
 }
 
-.general-inputs {
+.gereral-filter-date {
+    margin: 10px 0px;
     display: grid;
-    grid-gap: 5px;
     align-items: center;
     grid-template-columns: max-content max-content max-content max-content;
     grid-template-areas:
         "sdl sd1 sd2 fdb"
-        "edl ed1 ed2 fdb"
-        "ucl ucc ... ...";
+        "edl ed1 ed2 fdb";
 }
 
 #startDateLabel {
@@ -79,20 +78,24 @@ html, body {
 }
 
 #noLinkLabel {
-    justify-self: end;
     grid-area: ucl;
+    justify-self: start;
 }
 
 #noLinkNodes {
-    justify-self: start;
+    justify-self: end;
     grid-area: ucc;
+}
+
+#noLink {
+  margin-bottom: 5px;
 }
 
 
 /* Radial */
 #radial {
     width: 600px;
-    height: 700px;
+    height: 600px;
     grid-area: vis;
     align-self: center;
     text-align: center;
@@ -127,9 +130,9 @@ html, body {
 }
 
 .radial_info {
+    grid-area: txt;
     word-wrap: break-word;
-    height: 100px;
+    height: 600px;
+    width: 325px;
     overflow-y: auto;
 }
-
-
