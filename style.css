@@ -87,8 +87,8 @@ html, body {
     grid-area: ucc;
 }
 
-#noLink {
-  margin-bottom: 5px;
+#noLink, #onlyHigh {
+  margin-bottom: 10px;
 }
 
 
